@@ -2,6 +2,11 @@
 
 package com.decoutkhanqindev.mvi_learning.util
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -38,3 +43,17 @@ fun <T> Flow<T>.toResultFlow(): Flow<Result<T>> =
       Result.failure(e)
     }
   }
+
+@Composable
+inline fun <T> OneTimeEventCollection(
+  lifecycleOwner: LifecycleOwner,
+  state: Lifecycle.State = Lifecycle.State.STARTED,
+  events: Flow<T>,
+  crossinline onEvent: (T) -> Unit,
+) {
+  LaunchedEffect(events, lifecycleOwner) {
+    lifecycleOwner.repeatOnLifecycle(state) {
+      events.collect { onEvent(it) }
+    }
+  }
+}
