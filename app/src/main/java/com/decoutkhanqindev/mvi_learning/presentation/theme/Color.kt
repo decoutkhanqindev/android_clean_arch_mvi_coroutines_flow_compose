@@ -1,4 +1,4 @@
-package com.decoutkhanqindev.mvi_learning.ui.theme
+package com.decoutkhanqindev.mvi_learning.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
