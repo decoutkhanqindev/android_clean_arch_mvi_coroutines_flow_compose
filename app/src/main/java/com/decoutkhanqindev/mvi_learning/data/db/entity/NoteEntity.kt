@@ -12,7 +12,6 @@ data class NoteEntity(
   val description: String,
   @ColumnInfo(name = "is_encrypt")
   val isEncrypt: Boolean = false,
-  val passKey: String? = null,
   @ColumnInfo(name = "created_at")
   val createdAt: Long = System.currentTimeMillis(),
   @ColumnInfo(name = "modified_at")

@@ -7,6 +7,7 @@ import com.decoutkhanqindev.mvi_learning.domain.usecase.AddNoteUseCase
 import com.decoutkhanqindev.mvi_learning.domain.usecase.DeleteNoteUseCase
 import com.decoutkhanqindev.mvi_learning.domain.usecase.GetAllNotesUseCase
 import com.decoutkhanqindev.mvi_learning.domain.usecase.GetNoteByIdUseCase
+import com.decoutkhanqindev.mvi_learning.domain.usecase.SavePassKeyUseCase
 import com.decoutkhanqindev.mvi_learning.domain.usecase.SearchNotesUseCase
 import com.decoutkhanqindev.mvi_learning.domain.usecase.UpdateNoteUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,6 +32,8 @@ class NoteViewModel(
   private val searchNoteUseCase: SearchNotesUseCase,
   private val updateNoteUseCase: UpdateNoteUseCase,
   private val deleteNoteUseCase: DeleteNoteUseCase,
+  private val savePassKeyUseCase: SavePassKeyUseCase,
+  private val getPassKeyUseCase: SavePassKeyUseCase,
 ) : ViewModel() {
   private val _noteListState = MutableStateFlow<NoteListState>(NoteListState.Initial)
   val noteListState: StateFlow<NoteListState> = _noteListState.asStateFlow()
@@ -64,15 +67,15 @@ class NoteViewModel(
 
       is NoteIntent.GetNoteById -> getNoteById(intent.id)
 
+      is NoteIntent.SearchNotes -> setSearchQuery(intent.query)
+
       is NoteIntent.UpdateNote -> updateNote(intent.note)
 
       is NoteIntent.DeleteNote -> deleteNote(intent.note)
 
-      is NoteIntent.SetSearchNoteQuery -> setSearchQuery(intent.query)
+      is NoteIntent.ChangePassKey -> setPassKey(intent.key)
 
-      is NoteIntent.SetNotePasswordKey -> setPasswordKey(intent.key)
-
-      is NoteIntent.SubmitNotePasswordKey -> submitNotePasswordKey()
+      NoteIntent.SavePassKey -> savePassKey()
     }
 
   private fun addNote(note: Note) {
@@ -183,36 +186,13 @@ class NoteViewModel(
     }
   }
 
-  private fun setPasswordKey(key: String) {
+  private fun setPassKey(key: String) {
     _notePassKeyState.value = NotePassKeyState.FillingPassKey(key)
   }
 
-  private fun submitNotePasswordKey() {
-    val currentNote = (_noteDetailState.value as? NoteDetailState.Success)?.note
-    val currentPassKey = (_notePassKeyState.value as? NotePassKeyState.FillingPassKey)?.passKey
+  private fun savePassKey() {
 
-    viewModelScope.launch {
-      if (currentNote == null) {
-
-      }
-    }
   }
 
-  private fun checkNotePasswordKey(
-    note: Note,
-    onCorrect: () -> Unit,
-  ) {
-    val currentPassKey =
-      (_notePassKeyState.value as? NotePassKeyState.FillingPassKey)?.passKey ?: return
 
-    if (note.passKey == currentPassKey) {
-      _notePassKeyState.value = NotePassKeyState.Correct
-      onCorrect()
-    } else {
-      viewModelScope.launch {
-        _notePassKeyState.value = NotePassKeyState.Incorrect
-        _events.send(NoteEvent.ShowSnackBar("Incorrect password key"))
-      }
-    }
-  }
 }

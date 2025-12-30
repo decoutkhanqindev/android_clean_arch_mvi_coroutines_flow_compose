@@ -8,7 +8,6 @@ data class Note(
   val title: String,
   val description: String,
   val isEncrypt: Boolean,
-  val passKey: String?,
   val createdAt: Long,
   val modifiedAt: Long
 )
